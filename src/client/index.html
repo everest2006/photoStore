@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TEST</title>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+<body>
+<h1>TEST-SERVER</h1>
+<div class="flex-grid-container">
+    <div class="flex-grid-element">H</div>
+    <div class="flex-grid-element">E</div>
+    <div class="flex-grid-element">L</div>
+    <div class="flex-grid-element">L</div>
+    <div class="flex-grid-element">O</div>
+</div>
+<div>
+    <form name="upload">
+        <input type="file" name="myfile">
+        <input type="submit" value="Загрузить">
+    </form>
+</div>
+</body>
+<script>
+    document.forms.upload.onsubmit = function() {
+        var input = this.elements.myfile;
+        var file = input.files[0];
+        if (file) {
+            upload(file);
+        }
+        return false;
+    };
+    function upload(file) {
+
+        var xhr = new XMLHttpRequest();
+
+        // обработчик для закачки
+        xhr.upload.onprogress = function(event) {
+            console.log(event.loaded + ' / ' + event.total);
+        }
+
+        // обработчики успеха и ошибки
+        // если status == 200, то это успех, иначе ошибка
+        xhr.onload = xhr.onerror = function() {
+            if (this.status == 200) {
+                console.log("success");
+            } else {
+                console.log("error " + this.status);
+            }
+        };
+
+        xhr.open("PUT", "http://localhost:3000/getFile/", true);
+        xhr.send(file);
+
+    }
+</script>
+</html>

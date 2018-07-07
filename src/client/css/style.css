@@ -1,0 +1,73 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 1.35em;
+    font-family: 'Nunito', sans-serif;
+    color: #fff;
+    background: #e8e9e9;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+h1 {
+    color: #555;
+}
+
+
+.flex-grid-container {
+    min-width: 400px;
+    min-height: 400px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 5px;
+    margin: 45px auto;
+    box-shadow: 0 1.5px 0 0 rgba(0,0,0,0.1);
+}
+
+.flex-grid-element {
+    color: #fff;
+    padding: 15px;
+    margin: 5px;
+    background: firebrick;
+    border-radius: 3px;
+    text-align: center;
+}
+
+/*-----------------------------------------------*/
+
+.flex-grid-container {
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;/*ширина столбцов и количесвто, можно указывать repeat(5,20%), так же есть единица fr, которая делит части строки*/
+    grid-template-rows: 20% 20% 20% 20% 20%;/*высота строк и количество, можно указывать repeat(5,20%), так же есть единица fr, которая делит части столбца*/
+    /*grid-template: 50% 50%/ 200px;*/ /*короткая запись*/
+}
+
+.flex-grid-element {
+
+}
+
+.flex-grid-element:nth-child(1) {
+    /*   grid-column-start: 1;!*начальная ячейка позиции элемента по столбцам*!
+       grid-column-end: 1;!*конечная ячейка позиции элемента по столбцам*!*/
+    /*
+    grid-column: 1/2;!*короткая запись 1 - начальная позиция, до 5 - конечная ячейка позиции*!
+    */
+    /*    grid-row-start: 1;!*начальная ячейка позиции элемента по строкам*!
+        grid-row-end: 1;!*конечная ячейка позиции элемента по строкам*!
+        grid-row: 1/5;!*короткая запись 1 - начальная позиция, до 5 - конечная ячейка позиции*!*/
+    grid-area: 1/1/5/5;/*короткая запись выше приведенных свойств строка начало/столбец начало/строка конец/столбец конец*/
+
+    order: 1; /*относительная позиция элементов, по умолчанию у всех 0*/
+}
+
+.flex-grid-element:nth-child(2) {
+
+}
+.flex-grid-element:nth-child(3) {
+
+}
+.flex-grid-element:nth-child(4){
+
+}
