@@ -4,6 +4,7 @@ import path from 'path';
 import express from 'express';
 import config from 'config';
 import log from 'winston';
+import bodyParser from 'body-parser';
 import {serverRouters} from './routers';
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
+app.use(bodyParser.json());
 
 serverRouters(app);
 

@@ -36,8 +36,9 @@
 </body>
 <script>
     document.forms.addFolder.onsubmit = function() {
-        var path = this.elements.pathFolder;
-        var nameNewFolder = this.elements.newFolder;
+        var path = this.elements.pathFolder.value;
+        var nameNewFolder = this.elements.newFolder.value;
+
 
         var xhr = new XMLHttpRequest();
         xhr.upload.onprogress = function(event) {
@@ -63,7 +64,7 @@
             "nameFolder": nameNewFolder,
             "path": `everest2006@tut.by/${path}`
         })
-        xhr.send();
+        xhr.send(json);
 
 
 

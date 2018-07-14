@@ -5,11 +5,8 @@ import multiparty from 'multiparty';
 
 function parseFromData(req) {
     return new Promise(function (resolve, reject) {
-        console.log(req);
-        req.setEncoding('utf8');
-        req.on('data', function (data) {
-            console.log(data); // I can't parse it because, it's a string. why?
-        });
+        console.log(req.body);
+
     });
 }
 
