@@ -1,50 +1,95 @@
 import log from 'winston';
 import request from 'request';
-import fs from 'fs';
-const Readable = require('readable-stream').Readable;
+import {streamToBuffer, bufferToStream} from '../services';
+import multiparty from 'multiparty';
+import config from 'config';
 
-function httpGetFile(req) {
+
+
+
+function requestToYandex(fileName, folderPath) {
     return new Promise(function(resolve, reject){
         var options = {
-            url:  `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${encodeURIComponent('/photoStore/photo.png')}`,
-            headers: {'Authorization': 'OAuth AQAEA7qhhYDzAAUOXIUrtcLziUmgo-qcLjy2-vk'}
+            url:  `${config.get('yandex.urlUpload')}/${config.get('yandex.folder')}/${folderPath}${fileName}`,
+            headers: {'Authorization': `OAuth ${config.get('yandex.OAuth')}`}
         };
-        function callback(error, response, body) {
-            console.log(response.statusCode);
+        request(options,  function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                let href = JSON.parse(response['body']).href;
-                console.log(href);
-                resolve(href);
+                resolve(JSON.parse(response['body']).href);
             }
-        }
-        request(options, callback);
+            if (response.statusCode == 409) {
+                reject(JSON.parse(response['body']).description);
+            }
+            reject(error);
+        });
     })
 }
 
+function parseFromData(req) {
+    return new Promise(function (resolve, reject) {
+        var contentType = req.headers['content-type'];
+        var form = new multiparty.Form();
+        var dataFromRequest ={};
+
+        if (contentType && contentType.indexOf('multipart') === 0) {
+            form.on('field', function(name, value) {
+                dataFromRequest[name] = value;
+            });
+            form.on('part', function(part) {
+                if (part.filename) {
+                    streamToBuffer(part).then(function (buffer) {
+                        dataFromRequest.buffer = buffer;
+                    });
+                    part.resume();
+                }
+                part.on('error', function(err) {
+                    reject(err);
+                });
+            });
+            form.on('close', function() {
+               resolve(dataFromRequest);
+            });
+            form.parse(req,);
+        }
+    });
+}
 
 export const getFile = (req, res) => {
-    let myData;
-    req.on('data', function (data) {
-        myData+=data;
-    })
-        .on('end', function () {
-
-        })
-        .pipe(fs.createWriteStream('d:\\myPhoto.jpg'));
-
-    httpGetFile(req).then(function (href) {
-        console.log(href);
-        fs.createReadStream('d:\\myPhoto.jpg').pipe(
-            request.put(href, function (error, response, body) {
-                if(response.statusCode == 201){
-                    console.log('ok');
-                } else {
-                    console.log('error: '+ response.statusCode);
-                    console.log(body);
-                }
+    parseFromData(req).then(function (dataFromRequest) {
+        requestToYandex(dataFromRequest.fileName, dataFromRequest.path)
+            .then(function (href) {
+                return new Promise(function (resolve, reject) {
+                    bufferToStream(dataFromRequest.buffer).pipe(
+                        request.put(href, function (error, response, body) {
+                            if(response.statusCode == 201){
+                                log.info(`file ${dataFromRequest.fileName} inTo yandex disk ${response.statusCode}`);
+                                resolve();
+                            } else {
+                                log.error('put file to yandex disk error', response.statusCode);
+                                log.error('error', body);
+                            }
+                        })
+                    );
+                });
             })
-        );
-    })
+            .then(function () {
+                return new Promise(function (resolve, reject) {
+                    var options = {
+                        url: `${config.get('yandex.urlDownloader')}/${config.get('yandex.folder')}/${dataFromRequest.path}${dataFromRequest.fileName}`,
+                        headers: {'Authorization': `OAuth ${config.get('yandex.OAuth')}`}
+                    };
+                    request.get(options, function (error, response, body) {
+                        //console.log(response);
+                        resolve(JSON.parse(response['body']).file);
+                    })
+                });
+            }).then(function (urlFile) {
+            console.log(urlFile);
+        })
+            .catch(function (err) {
+                log.error('requestToYandex ', err);
+            });
+    });
 
     res.sendStatus(200);
 };

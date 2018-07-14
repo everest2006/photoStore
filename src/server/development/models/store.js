@@ -25,10 +25,10 @@ let treeStoreSchema = new Schema({
         required: true
     },
     categoryArray: {
-        type: [treeStoreSchema]
+        type: []
     },
     imagesArray: {
-        type: [imageSchema]
+        type: []
     }
 });
 

@@ -21,14 +21,58 @@
 </div>
 <div>
     <form name="upload">
-        <input type="file" name="myfile">
+        <input type="file" name="file">
         <input type="submit" value="Загрузить">
+    </form>
+    <hr>
+    <form name="addFolder">
+        <label for="">Новая папка</label>
+        <input type="text" name="newFolder">
+        <label for="">Путь к новой папке</label>
+        <input type="text" name="pathFolder">
+        <input type="submit" value="Добавить папку">
     </form>
 </div>
 </body>
 <script>
+    document.forms.addFolder.onsubmit = function() {
+        var path = this.elements.pathFolder;
+        var nameNewFolder = this.elements.newFolder;
+
+        var xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = function(event) {
+            console.log(event.loaded + ' / ' + event.total);
+        };
+        xhr.onload = xhr.onerror = function() {
+            if (this.status == 200) {
+                console.log("success");
+            } else {
+                console.log("error " + this.status);
+            }
+        };
+
+        xhr.open("POST", "http://localhost:3000/addFolder/", true);
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        //xhr.setRequestHeader('fileName', file.name);
+        //xhr.body.config = {
+        //  email: 'everest2006@tut.by',
+        //  fileName: file.name
+        //};
+        json = JSON.stringify({
+            "email": "everest2006@tut.by",
+            "nameFolder": nameNewFolder,
+            "path": `everest2006@tut.by/${path}`
+        })
+        xhr.send();
+
+
+
+        return false;
+    };
+
+
     document.forms.upload.onsubmit = function() {
-        var input = this.elements.myfile;
+        var input = this.elements.file;
         var file = input.files[0];
         if (file) {
             upload(file);
@@ -38,14 +82,9 @@
     function upload(file) {
 
         var xhr = new XMLHttpRequest();
-
-        // обработчик для закачки
         xhr.upload.onprogress = function(event) {
             console.log(event.loaded + ' / ' + event.total);
-        }
-
-        // обработчики успеха и ошибки
-        // если status == 200, то это успех, иначе ошибка
+        };
         xhr.onload = xhr.onerror = function() {
             if (this.status == 200) {
                 console.log("success");
@@ -55,7 +94,17 @@
         };
 
         xhr.open("PUT", "http://localhost:3000/getFile/", true);
-        xhr.send(file);
+        //xhr.setRequestHeader('fileName', file.name);
+
+
+        let formData = new FormData();
+        console.log(file);
+        formData.append("file", file);
+        formData.append("fileName", file.name);
+        formData.append("email", "everest2006@tut.by");
+        formData.append("path", "everest2006@tut.by/");
+
+        xhr.send(formData);
 
     }
 </script>
