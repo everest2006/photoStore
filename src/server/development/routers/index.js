@@ -4,6 +4,8 @@ import {addUser} from './addUser';
 import {login} from './login';
 import {getFile} from './getFile';
 import {addFolder} from './addFolder';
+import {renameFolder} from './renameFolder';
+import {renameFile} from './renameFile';
 import log from 'winston';
 
 
@@ -22,8 +24,8 @@ export const serverRouters = (app) => {
     app.get('/addUser/:email/:pass', addUser);
     app.put('/getFile', getFile);
     app.post('/addFolder', addFolder);
-    // app.post('/removeFolder/:email/:pathInToFolder/:nameRemoveFolder', removeFolder);
-    // app.post('/renameFolder/:email/:pathInToFolder/:oldNameFolder/:newNameFolder', renameFolder);
+    //app.post('/removeFolder/:email/:pathInToFolder/:nameRemoveFolder', removeFolder);
+    app.post('/renameFolder', renameFolder);
     // app.post('/removeFile/:email/:pathInToFolder/:nameRemoveFile', removeFile);
-    // app.post('/renameFile/:email/:pathInToFolder/:oldNameFile/:newNameFile', renameFile);
+    app.post('/renameFile', renameFile);
 };

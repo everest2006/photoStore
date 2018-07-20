@@ -11,6 +11,8 @@
     "urlUpload": "https://cloud-api.yandex.net/v1/disk/resources/upload?path=",
     "urlDownloader": "https://cloud-api.yandex.net:443/v1/disk/resources?path=",
     "urlCreateFolder": "https://cloud-api.yandex.net/v1/disk/resources?path=",
+    "urlRename": "https://cloud-api.yandex.net/v1/disk/resources/move",
     "folder": "photoStore"
   }
 }
+

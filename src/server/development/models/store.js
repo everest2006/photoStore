@@ -1,16 +1,12 @@
 import mongoose from '../libs/db';
 
-const Schema = mongoose.Schema;
-
-let imageSchema = new Schema({
+let imageSchema = new mongoose.Schema({
     fileName: {
         type: String,
-        unique: true,
         required: true
     },
     urlImage: {
         type: String,
-        unique: true,
         required: true
     },
     descriptionImage: {
@@ -18,29 +14,34 @@ let imageSchema = new Schema({
     }
 });
 
-let treeStoreSchema = new Schema({
+
+
+var categorySchema = new mongoose.Schema({
     categoryName: {
         type: String,
-        unique: true,
         required: true
     },
-    categoryArray: {
-        type: []
-    },
-    imagesArray: {
-        type: []
-    }
+    categoryArray: [
+        { type: mongoose.Schema.Types.Object, ref: 'categorySchema' }
+    ],
+    imagesArray: [
+        imageSchema
+    ]
 });
 
-let schema = new Schema({
+let storeSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
         required: true
     },
-    treeStore: {
-        type: treeStoreSchema
-    }
+    treeStore:[
+        categorySchema
+    ]
+
+
 });
 
-export const Store = mongoose.model('Store',schema);
+export const Store = mongoose.model('Store',storeSchema);
+export const Category = mongoose.model('Category',categorySchema);
+export const Image = mongoose.model('Image',imageSchema);

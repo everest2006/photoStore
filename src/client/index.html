@@ -32,13 +32,92 @@
         <input type="text" name="pathFolder">
         <input type="submit" value="Добавить папку">
     </form>
+    <hr>
+    <form name="renameFolder">
+        <label for="">путь к текущей папке</label>
+        <input type="text" name="pathFolder">
+        <label for="">старое имя папки</label>
+        <input type="text" name="oldFolderName">
+        <label for="">новое имя папки</label>
+        <input type="text" name="newFolderName">
+        <input type="submit" value="Изменить имя">
+    </form>
+    <hr>
+    <form name="renameFile">
+        <label for="">путь к текущему файлу</label>
+        <input type="text" name="pathFolder">
+        <label for="">старое имя файла</label>
+        <input type="text" name="oldFileName">
+        <label for="">новое имя файла</label>
+        <input type="text" name="newFileName">
+        <input type="submit" value="Изменить имя">
+    </form>
 </div>
 </body>
 <script>
+    document.forms.renameFile.onsubmit = function () {
+        var pathFolder = this.elements.pathFolder.value;
+        var newFileName = this.elements.newFileName.value;
+        var oldFileName = this.elements.oldFileName.value;
+        var xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = function(event) {
+            console.log(event.loaded + ' / ' + event.total);
+        };
+        xhr.onload = xhr.onerror = function() {
+            if (this.status == 200) {
+                console.log("success");
+            } else {
+                console.log("error " + this.status);
+            }
+        };
+
+        xhr.open("POST", "http://localhost:3000/renameFile/", true);
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        xhr.send(JSON.stringify({
+            "email": "everest2006@tut.by",
+            "oldFileName": oldFileName,
+            "newFileName": newFileName,
+            "pathFolder": `everest2006@tut.by/${pathFolder}`
+        }));
+        return false;
+
+
+    };
+    document.forms.renameFolder.onsubmit = function () {
+        var pathFolder = this.elements.pathFolder.value;
+        var newFolderName = this.elements.newFolderName.value;
+        var oldFolderName = this.elements.oldFolderName.value;
+        var xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = function(event) {
+            console.log(event.loaded + ' / ' + event.total);
+        };
+        xhr.onload = xhr.onerror = function() {
+            if (this.status == 200) {
+                console.log("success");
+            } else {
+                console.log("error " + this.status);
+            }
+        };
+
+        xhr.open("POST", "http://localhost:3000/renameFolder/", true);
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        xhr.send(JSON.stringify({
+            "email": "everest2006@tut.by",
+            "oldFolderName": oldFolderName,
+            "newFolderName": newFolderName,
+            "pathFolder": `everest2006@tut.by/${pathFolder}`
+        }));
+        return false;
+
+
+    };
+
+
     document.forms.addFolder.onsubmit = function() {
         var path = this.elements.pathFolder.value;
         var nameNewFolder = this.elements.newFolder.value;
-
 
         var xhr = new XMLHttpRequest();
         xhr.upload.onprogress = function(event) {
@@ -54,20 +133,12 @@
 
         xhr.open("POST", "http://localhost:3000/addFolder/", true);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        //xhr.setRequestHeader('fileName', file.name);
-        //xhr.body.config = {
-        //  email: 'everest2006@tut.by',
-        //  fileName: file.name
-        //};
-        json = JSON.stringify({
+
+        xhr.send(JSON.stringify({
             "email": "everest2006@tut.by",
-            "nameFolder": nameNewFolder,
+            "newFolder": nameNewFolder,
             "path": `everest2006@tut.by/${path}`
-        })
-        xhr.send(json);
-
-
-
+        }));
         return false;
     };
 
@@ -95,15 +166,13 @@
         };
 
         xhr.open("PUT", "http://localhost:3000/getFile/", true);
-        //xhr.setRequestHeader('fileName', file.name);
-
 
         let formData = new FormData();
         console.log(file);
         formData.append("file", file);
         formData.append("fileName", file.name);
         formData.append("email", "everest2006@tut.by");
-        formData.append("path", "everest2006@tut.by/");
+        formData.append("path", "everest2006@tut.by/myPhoto/myPhoto1/");
 
         xhr.send(formData);
 

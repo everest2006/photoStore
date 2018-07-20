@@ -13,14 +13,17 @@ export const addUser = (req, res) => {
         let store = new Store(
             {
                 email: req.params.email,
-                treeStore: {
+                treeStore: [
+                ]
+            }
+        );
+        store.treeStore.push(
+                {
                     categoryName: 'root',
                     categoryArray: [],
                     imagesArray: []
                 }
-            }
         );
-
         store.save((err)=>{
             if(err) {
                 log.info(err);

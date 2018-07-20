@@ -3,6 +3,7 @@ import request from 'request';
 import {streamToBuffer, bufferToStream} from '../services';
 import multiparty from 'multiparty';
 import config from 'config';
+import {Store, Image} from '../models/store';
 
 
 
@@ -84,8 +85,52 @@ export const getFile = (req, res) => {
                     })
                 });
             }).then(function (urlFile) {
-            console.log(urlFile);
-        })
+                return new Promise(function (resolve, reject) {
+                    Store.findOne({email: dataFromRequest.email}, function(err, store) {
+                        if (err) log.error(`don't find ${dataFromRequest.email} in DB`, err);
+
+
+
+                        let obj = store['treeStore'];
+                        let prevObj = {};
+                        let path = dataFromRequest.path.split('/');
+                        path[0] = 'root';
+                        console.log(path);
+                        for(let i=0; i<path.length; i++){
+                            if (path[i]){
+                                obj = obj.filter(item=>item.categoryName===path[i])[0];
+                                prevObj = obj;
+                                obj = obj.categoryArray;
+                            }
+                        }
+                        console.log(prevObj);
+                        prevObj.imagesArray.push(
+                            new Image(
+                            {
+                                fileName: dataFromRequest.fileName,
+                                urlImage: urlFile,
+                                descriptionImage: ''
+                            }
+                            )
+                        );
+                        console.log(prevObj);
+                        store.markModified('treeStore');
+                        store.save(function(err, d) {
+                            console.log('------');
+                            console.log(err);
+                            if (err) log.error(err);
+                            console.log(d);
+                            log.info(`file ${dataFromRequest.fileName} added to DB`);
+                        });
+
+
+
+
+
+                        resolve();
+                    });
+                });
+            })
             .catch(function (err) {
                 log.error('requestToYandex ', err);
             });
